@@ -39,20 +39,37 @@
         .modal-overlay {
             transition: opacity 0.3s ease;
         }
+        .hidden-file-input {
+            display: none;
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-gray-300">
 
     <div class="w-full md:max-w-lg md:mx-auto bg-gray-800 min-h-screen md:shadow-2xl">
         <!-- Header -->
-        <div class="p-6 text-center bg-gradient-to-br from-green-500 to-teal-600 text-white">
+        <div class="p-6 text-center bg-gradient-to-br from-green-500 to-teal-600 text-white relative">
+             <!-- Dropdown Menu Button -->
+             <div class="absolute top-4 left-4">
+                <button id="menu-btn" class="p-2 rounded-full hover:bg-black/20 focus:outline-none focus:ring-2 focus:ring-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+                <!-- Dropdown Panel -->
+                <div id="dropdown-menu" class="hidden absolute left-0 mt-2 w-48 bg-slate-700 rounded-md shadow-lg z-20 border border-slate-600">
+                    <a href="https://timer5555.github.io/timer555/" target="_blank" class="block px-4 py-2 text-sm text-gray-200 hover:bg-slate-600">Timer</a>
+                    <a href="https://timer5555.github.io/calfoodkub/" target="_blank" class="block px-4 py-2 text-sm text-gray-200 hover:bg-slate-600">Cal Food</a>
+                    <a href="https://timer5555.github.io/expense/" target="_blank" class="block px-4 py-2 text-sm text-gray-200 hover:bg-slate-600">Expense</a>
+                    <a href="https://timer5555.github.io/tooyen/" target="_blank" class="block px-4 py-2 text-sm text-gray-200 hover:bg-slate-600">ตู้เย็น</a>
+                </div>
+             </div>
              <h1 class="text-3xl font-bold">สมุดรายจ่าย</h1>
              <p class="opacity-90 mt-1 text-sm">บันทึกและสรุปผลในที่เดียว</p>
         </div>
 
         <!-- Tabs -->
         <div class="flex border-b border-gray-700 sticky top-0 bg-gray-800 z-10">
-            <button id="tab-record" class="tab-btn flex-1 p-4 font-semibold text-gray-400 border-b-2 border-transparent hover:bg-gray-700/50 transition">บันทึกรายการ</button>
+            <button id="tab-record" class="tab-btn flex-1 p-4 font-semibold text-gray-400 border-b-2 border-transparent hover:bg-gray-700/50 transition">บันทึก</button>
+            <button id="tab-list" class="tab-btn flex-1 p-4 font-semibold text-gray-400 border-b-2 border-transparent hover:bg-gray-700/50 transition">รายการล่าสุด</button>
             <button id="tab-summary" class="tab-btn flex-1 p-4 font-semibold text-gray-400 border-b-2 border-transparent hover:bg-gray-700/50 transition">สรุปผล</button>
         </div>
 
@@ -67,7 +84,8 @@
 
             <!-- Record Tab Content -->
             <div id="content-record">
-                <form id="expense-form" class="mb-8 space-y-4">
+                <h2 class="text-2xl font-bold text-white mb-4">บันทึกรายการใหม่</h2>
+                <form id="expense-form" class="space-y-4">
                     <!-- Form fields -->
                     <div>
                         <label for="description" class="block text-sm font-medium text-gray-400 mb-1">รายการ</label>
@@ -85,17 +103,36 @@
                             <input type="number" id="amount" class="w-full text-lg px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-white" required>
                         </div>
                     </div>
+                    
+                    <!-- Image Upload Section -->
+                    <div class="space-y-2">
+                         <label class="block text-sm font-medium text-gray-400">แนบรูปภาพ (ถ้ามี)</label>
+                         <div id="image-preview-container" class="hidden relative w-40 h-40 mx-auto">
+                            <img id="image-preview" class="w-full h-full object-cover rounded-lg" alt="Image Preview">
+                            <button type="button" id="remove-image-btn" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-7 h-7 flex items-center justify-center shadow-lg">&times;</button>
+                         </div>
+                         <div id="image-upload-buttons" class="flex gap-4">
+                            <label for="camera-input" class="flex-1 text-center py-3 px-4 bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-600">📷 ถ่ายภาพ</label>
+                            <input type="file" id="camera-input" class="hidden-file-input" accept="image/*" capture="environment">
+                            <label for="gallery-input" class="flex-1 text-center py-3 px-4 bg-gray-700 rounded-lg cursor-pointer hover:bg-gray-600">🖼️ เลือกรูป</label>
+                            <input type="file" id="gallery-input" class="hidden-file-input" accept="image/*">
+                         </div>
+                    </div>
+
                     <button type="submit" id="submit-btn" class="w-full bg-green-600 text-white font-bold text-lg py-3 px-4 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-green-500 transition active:scale-95">
                         บันทึกรายการ
                     </button>
                 </form>
-                <div>
-                    <h2 class="text-2xl font-bold text-white mb-4">รายการล่าสุด</h2>
-                    <div id="expense-list" class="space-y-3 max-h-[50vh] overflow-y-auto pr-2">
-                        <!-- Expense items will be injected here -->
-                    </div>
-                </div>
             </div>
+
+            <!-- List Tab Content -->
+            <div id="content-list" class="hidden">
+                 <h2 class="text-2xl font-bold text-white mb-4">รายการทั้งหมด</h2>
+                 <div id="expense-list" class="space-y-3 max-h-[75vh] overflow-y-auto pr-2">
+                     <!-- Expense items will be injected here -->
+                 </div>
+            </div>
+
 
             <!-- Summary Tab Content -->
             <div id="content-summary" class="hidden">
@@ -160,17 +197,24 @@
             </div>
         </div>
     </div>
+    
+    <!-- Image Popup Modal -->
+    <div id="image-modal" class="modal-overlay fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50 hidden opacity-0 p-4">
+        <button id="close-image-modal-btn" class="absolute top-4 right-4 text-white text-4xl font-bold">&times;</button>
+        <img id="modal-image" src="" class="max-w-full max-h-full rounded-lg" alt="Full size image">
+    </div>
 
 
     <script>
         // --- CONFIGURATION ---
-        // 🚨 PASTE YOUR GOOGLE APPS SCRIPT WEB APP URL HERE
         const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwF0MLT7rRteruBSjfsLrTe8P-o_Za-uD7A0Lpa_t3E8g7L0Ttkwfs4kqMtEQZTg30k/exec';
 
         // --- APP STATE & CONSTANTS ---
         let allExpenses = [];
+        let isDataLoaded = false; 
         let categoryChart = null;
         let itemToDeleteTimestamp = null;
+        let selectedImage = { base64: null, name: null, type: null };
         const CATEGORIES = ['อาหาร', 'เดินทาง', 'ของใช้ส่วนตัว', 'บันเทิง', 'ที่อยู่อาศัย', 'การศึกษา', 'สุขภาพ', 'ชำระบิล', 'อื่นๆ'];
         const CATEGORY_COLORS = {
             'อาหาร': '#4ade80', 'เดินทาง': '#60a5fa', 'ของใช้ส่วนตัว': '#facc15',
@@ -180,8 +224,10 @@
 
         // --- UI ELEMENTS ---
         const tabRecord = document.getElementById('tab-record');
+        const tabList = document.getElementById('tab-list');
         const tabSummary = document.getElementById('tab-summary');
         const contentRecord = document.getElementById('content-record');
+        const contentList = document.getElementById('content-list');
         const contentSummary = document.getElementById('content-summary');
         const expenseForm = document.getElementById('expense-form');
         const descriptionInput = document.getElementById('description');
@@ -201,6 +247,20 @@
         const deleteModal = document.getElementById('delete-modal');
         const cancelDeleteBtn = document.getElementById('cancel-delete-btn');
         const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+        // Image elements
+        const cameraInput = document.getElementById('camera-input');
+        const galleryInput = document.getElementById('gallery-input');
+        const imagePreviewContainer = document.getElementById('image-preview-container');
+        const imagePreview = document.getElementById('image-preview');
+        const removeImageBtn = document.getElementById('remove-image-btn');
+        const imageUploadButtons = document.getElementById('image-upload-buttons');
+        // Image Modal elements
+        const imageModal = document.getElementById('image-modal');
+        const modalImage = document.getElementById('modal-image');
+        const closeImageModalBtn = document.getElementById('close-image-modal-btn');
+        // Dropdown menu elements
+        const menuBtn = document.getElementById('menu-btn');
+        const dropdownMenu = document.getElementById('dropdown-menu');
 
 
         // --- INITIALIZATION ---
@@ -208,7 +268,6 @@
             populateCategories();
             setupEventListeners();
             setActiveTab('record');
-            fetchExpenses();
         });
 
         function populateCategories() {
@@ -222,8 +281,20 @@
 
         function setupEventListeners() {
             tabRecord.addEventListener('click', () => setActiveTab('record'));
+            tabList.addEventListener('click', () => setActiveTab('list'));
             tabSummary.addEventListener('click', () => setActiveTab('summary'));
             expenseForm.addEventListener('submit', handleAddExpense);
+
+            // Menu Dropdown Listener
+            menuBtn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Prevent window listener from closing it immediately
+                dropdownMenu.classList.toggle('hidden');
+            });
+
+            // Image listeners
+            cameraInput.addEventListener('change', handleImageSelection);
+            galleryInput.addEventListener('change', handleImageSelection);
+            removeImageBtn.addEventListener('click', clearImageSelection);
 
             summaryPeriodBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
@@ -244,18 +315,71 @@
                 }
             });
 
-            // Delete listeners
-            expenseList.addEventListener('click', (e) => {
-                const deleteButton = e.target.closest('.delete-btn');
-                if (deleteButton) {
-                    itemToDeleteTimestamp = deleteButton.dataset.timestamp;
-                    showDeleteModal(true);
-                }
-            });
+            // Event delegation for dynamic content
+            expenseList.addEventListener('click', handleListClick);
+            summaryExpenseList.addEventListener('click', handleListClick);
+            
             cancelDeleteBtn.addEventListener('click', () => showDeleteModal(false));
             confirmDeleteBtn.addEventListener('click', handleDeleteExpense);
+            
+            // Image modal close listeners
+            closeImageModalBtn.addEventListener('click', () => showImageModal(false));
+            imageModal.addEventListener('click', (e) => {
+                if (e.target === imageModal) {
+                    showImageModal(false);
+                }
+            });
+            
+            // Global listener to close dropdowns when clicking outside
+            window.addEventListener('click', () => {
+                if (!dropdownMenu.classList.contains('hidden')) {
+                    dropdownMenu.classList.add('hidden');
+                }
+            });
         }
         
+        function handleListClick(event) {
+            const deleteButton = event.target.closest('.delete-btn');
+            const imageTrigger = event.target.closest('.image-popup-trigger');
+
+            if (deleteButton) {
+                itemToDeleteTimestamp = deleteButton.dataset.timestamp;
+                showDeleteModal(true);
+            } else if (imageTrigger) {
+                const imageSrc = imageTrigger.querySelector('img')?.src;
+                if (imageSrc && !imageSrc.includes('placehold.co')) {
+                    showImageModal(true, imageSrc);
+                }
+            }
+        }
+
+        // --- IMAGE HANDLING ---
+        function handleImageSelection(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = e => {
+                selectedImage.base64 = e.target.result.split(',')[1];
+                selectedImage.name = file.name;
+                selectedImage.type = file.type;
+                
+                imagePreview.src = e.target.result;
+                imagePreviewContainer.classList.remove('hidden');
+                imageUploadButtons.classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function clearImageSelection() {
+            selectedImage = { base64: null, name: null, type: null };
+            imagePreview.src = "";
+            imagePreviewContainer.classList.add('hidden');
+            imageUploadButtons.classList.remove('hidden');
+            cameraInput.value = "";
+            galleryInput.value = "";
+        }
+
         // --- DATA HANDLING (Fetch API) ---
         async function fetchExpenses() {
             showLoading(true);
@@ -286,6 +410,7 @@
         }
 
         function onFetchSuccess(result) {
+            isDataLoaded = true;
             allExpenses = result.data.map(item => ({
                 ...item,
                 timestamp: new Date(item.timestamp),
@@ -293,8 +418,6 @@
             })).sort((a, b) => b.timestamp - a.timestamp);
             
             renderExpenseList();
-            updateSummary('day'); 
-            setActivePeriod('day');
         }
 
         function onFetchFailure(error) {
@@ -315,14 +438,21 @@
 
             const payload = {
                 action: 'add',
-                data: { description, category, amount }
+                data: { 
+                    description, 
+                    category, 
+                    amount,
+                    base64Data: selectedImage.base64,
+                    fileName: selectedImage.name,
+                    mimeType: selectedImage.type
+                }
             };
 
             try {
                 const response = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
                     body: JSON.stringify(payload),
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' } // Required for Apps Script
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }
                 });
                 if (!response.ok) throw new Error('Network response was not ok');
                 const result = await response.json();
@@ -340,8 +470,9 @@
             submitBtn.disabled = false;
             submitBtn.textContent = 'บันทึกรายการ';
             expenseForm.reset();
-            descriptionInput.focus();
-            fetchExpenses();
+            clearImageSelection();
+            isDataLoaded = false;
+            setActiveTab('list');
         }
 
         function onAddFailure(error) {
@@ -382,7 +513,8 @@
 
         function onDeleteSuccess() {
             itemToDeleteTimestamp = null;
-            fetchExpenses();
+            isDataLoaded = false;
+            setActiveTab('list');
         }
 
         function onDeleteFailure(error) {
@@ -393,16 +525,26 @@
 
 
         // --- UI RENDERING & LOGIC ---
-        function setActiveTab(tabName) {
+        async function setActiveTab(tabName) {
+            contentRecord.classList.add('hidden');
+            contentList.classList.add('hidden');
+            contentSummary.classList.add('hidden');
+            tabRecord.classList.remove('active');
+            tabList.classList.remove('active');
+            tabSummary.classList.remove('active');
+
+            if ((tabName === 'list' || tabName === 'summary') && !isDataLoaded) {
+                await fetchExpenses();
+            }
+
             if (tabName === 'record') {
                 contentRecord.classList.remove('hidden');
-                contentSummary.classList.add('hidden');
                 tabRecord.classList.add('active');
-                tabSummary.classList.remove('active');
-            } else {
-                contentRecord.classList.add('hidden');
+            } else if (tabName === 'list') {
+                contentList.classList.remove('hidden');
+                tabList.classList.add('active');
+            } else if (tabName === 'summary') {
                 contentSummary.classList.remove('hidden');
-                tabRecord.classList.remove('active');
                 tabSummary.classList.add('active');
                 updateSummary('day'); 
                 setActivePeriod('day');
@@ -429,6 +571,20 @@
                 setTimeout(() => deleteModal.classList.add('hidden'), 300);
             }
         }
+        
+        function showImageModal(show, src = '') {
+            if (show) {
+                modalImage.src = src;
+                imageModal.classList.remove('hidden');
+                setTimeout(() => imageModal.classList.remove('opacity-0'), 10);
+            } else {
+                imageModal.classList.add('opacity-0');
+                setTimeout(() => {
+                    imageModal.classList.add('hidden');
+                    modalImage.src = ''; // Clear src to save memory
+                }, 300);
+            }
+        }
 
         function renderExpenseList() {
             expenseList.innerHTML = '';
@@ -438,16 +594,26 @@
             }
             allExpenses.forEach(expense => {
                 const itemDiv = document.createElement('div');
-                itemDiv.className = 'flex items-center bg-gray-700/50 p-3 rounded-lg border border-gray-700';
+                const uniqueId = new Date(expense.timestamp).getTime(); 
+                itemDiv.className = 'flex items-start bg-gray-700/50 p-3 rounded-lg border border-gray-700';
                 const category = expense.category || 'อื่นๆ';
                 const color = CATEGORY_COLORS[category] || CATEGORY_COLORS['อื่นๆ'];
-                const formattedDate = expense.timestamp.toLocaleDateString('th-TH', { day: '2-digit', month: 'short' });
+                const formattedDate = new Date(expense.timestamp).toLocaleDateString('th-TH', { day: '2-digit', month: 'short' });
+                
+                let imageHtml = '';
+                if (expense.imageUrl) {
+                    imageHtml = `
+                        <div class="flex-shrink-0 image-popup-trigger cursor-pointer">
+                            <img id="img-${uniqueId}" src="https://placehold.co/64x64/374151/4b5563?text=..." alt="รูปรายจ่าย" class="w-16 h-16 object-cover rounded-md mr-4">
+                        </div>`;
+                }
 
                 itemDiv.innerHTML = `
+                    ${imageHtml}
                     <div class="flex-grow">
                         <div class="flex justify-between items-start">
                             <p class="font-medium text-gray-100 pr-2 break-words">${escapeHTML(expense.description)}</p>
-                            <p class="font-bold text-gray-100 flex-shrink-0">${expense.amount.toLocaleString('th-TH')} ฿</p>
+                            <p class="font-bold text-gray-100 flex-shrink-0">${parseFloat(expense.amount).toLocaleString('th-TH')} ฿</p>
                         </div>
                         <div class="flex items-center text-xs text-gray-400 mt-1">
                             <span class="w-2 h-2 rounded-full mr-2" style="background-color: ${color};"></span>
@@ -456,11 +622,43 @@
                             <span>${formattedDate}</span>
                         </div>
                     </div>
-                    <button class="delete-btn p-2 ml-2 text-gray-500 hover:text-red-400 rounded-full flex-shrink-0" data-timestamp="${expense.timestamp.toISOString()}">
+                    <button class="delete-btn p-2 ml-2 text-gray-500 hover:text-red-400 rounded-full flex-shrink-0" data-timestamp="${expense.timestamp}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                     </button>
                 `;
                 expenseList.appendChild(itemDiv);
+            });
+            fetchAllImages();
+        }
+        
+        async function fetchAndDisplayImage(fileId, elementId) {
+            try {
+                const payload = { action: 'getImage', data: { fileId } };
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload),
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }
+                });
+                if (!response.ok) throw new Error('Failed to fetch image data');
+                const result = await response.json();
+                if (result.success) {
+                    const imgElement = document.getElementById(elementId);
+                    if (imgElement) {
+                        imgElement.src = `data:${result.data.mimeType};base64,${result.data.base64Data}`;
+                    }
+                }
+            } catch (error) {
+                console.error(`Could not load image for element ${elementId}:`, error);
+            }
+        }
+
+        function fetchAllImages() {
+            document.querySelectorAll('img[data-file-id]').forEach(img => {
+                const fileId = img.dataset.fileId;
+                if (fileId) {
+                    fetchAndDisplayImage(fileId, img.id);
+                    img.removeAttribute('data-file-id');
+                }
             });
         }
 
@@ -476,8 +674,8 @@
                 }
                 case 'week': {
                     const today = new Date();
-                    const dayOfWeek = today.getDay(); // Sunday - 0, Monday - 1, ...
-                    const weekStart = new Date(today.setDate(today.getDate() - dayOfWeek));
+                    const dayOfWeek = today.getDay();
+                    const weekStart = new Date(new Date().setDate(today.getDate() - dayOfWeek));
                     weekStart.setHours(0, 0, 0, 0);
                     filteredExpenses = allExpenses.filter(exp => exp.timestamp >= weekStart);
                     break;
@@ -519,16 +717,26 @@
             }
             expenses.forEach(expense => {
                 const itemDiv = document.createElement('div');
-                itemDiv.className = 'flex items-center bg-gray-700/50 p-3 rounded-lg border border-gray-700';
+                const uniqueId = new Date(expense.timestamp).getTime();
+                itemDiv.className = 'flex items-start bg-gray-700/50 p-3 rounded-lg border border-gray-700';
                 const category = expense.category || 'อื่นๆ';
                 const color = CATEGORY_COLORS[category] || CATEGORY_COLORS['อื่นๆ'];
-                const formattedDate = expense.timestamp.toLocaleDateString('th-TH', { day: '2-digit', month: 'short' });
+                const formattedDate = new Date(expense.timestamp).toLocaleDateString('th-TH', { day: '2-digit', month: 'short' });
                 
+                let imageHtml = '';
+                if (expense.imageUrl) {
+                    imageHtml = `
+                        <div class="flex-shrink-0 image-popup-trigger cursor-pointer">
+                            <img id="summary-img-${uniqueId}" src="https://placehold.co/64x64/374151/4b5563?text=..." alt="รูปรายจ่าย" class="w-16 h-16 object-cover rounded-md mr-4">
+                        </div>`;
+                }
+
                 itemDiv.innerHTML = `
+                    ${imageHtml}
                     <div class="flex-grow">
                         <div class="flex justify-between items-start">
                             <p class="font-medium text-gray-100 pr-2 break-words">${escapeHTML(expense.description)}</p>
-                            <p class="font-bold text-gray-100 flex-shrink-0">${expense.amount.toLocaleString('th-TH')} ฿</p>
+                            <p class="font-bold text-gray-100 flex-shrink-0">${parseFloat(expense.amount).toLocaleString('th-TH')} ฿</p>
                         </div>
                         <div class="flex items-center text-xs text-gray-400 mt-1">
                             <span class="w-2 h-2 rounded-full mr-2" style="background-color: ${color};"></span>
@@ -540,6 +748,7 @@
                 `;
                 summaryExpenseList.appendChild(itemDiv);
             });
+            fetchAllImages();
         }
 
 
