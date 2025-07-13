@@ -221,6 +221,7 @@
             'บันเทิง': '#a78bfa', 'ที่อยู่อาศัย': '#fb923c', 'การศึกษา': '#818cf8',
             'สุขภาพ': '#f87171', 'ชำระบิล': '#f472b6', 'อื่นๆ': '#9ca3af',
         };
+        let imageObserver; // For lazy loading
 
         // --- UI ELEMENTS ---
         const tabRecord = document.getElementById('tab-record');
@@ -267,6 +268,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             populateCategories();
             setupEventListeners();
+            setupImageObserver();
             setActiveTab('record');
         });
 
@@ -287,7 +289,7 @@
 
             // Menu Dropdown Listener
             menuBtn.addEventListener('click', (e) => {
-                e.stopPropagation(); // Prevent window listener from closing it immediately
+                e.stopPropagation();
                 dropdownMenu.classList.toggle('hidden');
             });
 
@@ -354,6 +356,21 @@
         }
 
         // --- IMAGE HANDLING ---
+        function setupImageObserver() {
+            imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        const fileId = img.dataset.fileId;
+                        if (fileId) {
+                            fetchAndDisplayImage(fileId, img.id);
+                        }
+                        observer.unobserve(img); // Stop observing once loaded
+                    }
+                });
+            }, { rootMargin: "100px" }); // Start loading 100px before they enter viewport
+        }
+
         function handleImageSelection(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -602,9 +619,10 @@
                 
                 let imageHtml = '';
                 if (expense.imageUrl) {
+                    const fileId = new URL(expense.imageUrl).searchParams.get('id');
                     imageHtml = `
                         <div class="flex-shrink-0 image-popup-trigger cursor-pointer">
-                            <img id="img-${uniqueId}" src="https://placehold.co/64x64/374151/4b5563?text=..." alt="รูปรายจ่าย" class="w-16 h-16 object-cover rounded-md mr-4">
+                            <img id="img-${uniqueId}" data-file-id="${fileId}" src="https://placehold.co/64x64/374151/4b5563?text=..." alt="รูปรายจ่าย" class="lazy-image w-16 h-16 object-cover rounded-md mr-4">
                         </div>`;
                 }
 
@@ -628,7 +646,7 @@
                 `;
                 expenseList.appendChild(itemDiv);
             });
-            fetchAllImages();
+            observeVisibleImages();
         }
         
         async function fetchAndDisplayImage(fileId, elementId) {
@@ -652,13 +670,9 @@
             }
         }
 
-        function fetchAllImages() {
-            document.querySelectorAll('img[data-file-id]').forEach(img => {
-                const fileId = img.dataset.fileId;
-                if (fileId) {
-                    fetchAndDisplayImage(fileId, img.id);
-                    img.removeAttribute('data-file-id');
-                }
+        function observeVisibleImages() {
+            document.querySelectorAll('.lazy-image[data-file-id]').forEach(img => {
+                imageObserver.observe(img);
             });
         }
 
@@ -725,9 +739,10 @@
                 
                 let imageHtml = '';
                 if (expense.imageUrl) {
+                    const fileId = new URL(expense.imageUrl).searchParams.get('id');
                     imageHtml = `
                         <div class="flex-shrink-0 image-popup-trigger cursor-pointer">
-                            <img id="summary-img-${uniqueId}" src="https://placehold.co/64x64/374151/4b5563?text=..." alt="รูปรายจ่าย" class="w-16 h-16 object-cover rounded-md mr-4">
+                            <img id="summary-img-${uniqueId}" data-file-id="${fileId}" src="https://placehold.co/64x64/374151/4b5563?text=..." alt="รูปรายจ่าย" class="lazy-image w-16 h-16 object-cover rounded-md mr-4">
                         </div>`;
                 }
 
@@ -748,7 +763,7 @@
                 `;
                 summaryExpenseList.appendChild(itemDiv);
             });
-            fetchAllImages();
+            observeVisibleImages();
         }
 
 
